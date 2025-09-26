@@ -17,6 +17,10 @@ def load_data():
     df = pd.read_csv(obj["Body"])
     return df
 
+if st.button("🔄 Refresh Data"):
+    st.cache_data.clear()
+    st.rerun()
+
 df = load_data()
 
 st.title("Property Dashboard")
