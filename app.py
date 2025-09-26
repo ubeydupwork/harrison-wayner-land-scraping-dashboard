@@ -40,7 +40,7 @@ st.title("Property Dashboard")
 # Eğer veri yoksa
 # --------------------------
 if df.empty:
-    st.warning("⚠️ No data available")
+    st.warning("⚠️ No Land Found")
 else:
     # Price sütununu güvenli şekilde sayıya çevir
     df["Price"] = df["Price"].replace('[\$,]', '', regex=True)
