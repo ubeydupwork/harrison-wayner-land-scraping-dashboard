@@ -35,9 +35,26 @@ counties = st.sidebar.multiselect("County", df["County"].unique())
 
 # Price Range
 df["Price"] = df["Price"].replace('[\$,]', '', regex=True).astype(float)
-price_min = df["Price"].min()
-price_max = df["Price"].max()
-price_range = st.sidebar.slider("Price Range", price_min, price_max, (price_min, price_max))
+
+price_min = int(df["Price"].min())
+price_max = int(df["Price"].max())
+
+# Slider
+price_range = st.sidebar.slider(
+    "Price Range",
+    min_value=price_min,
+    max_value=price_max,
+    value=(price_min, price_max)
+)
+
+# Seçilen değerleri formatlayarak göster
+st.sidebar.write(
+    f"Selected Price Range: ${price_range[0]:,} - ${price_range[1]:,}"
+)
+
+# Filtreleme
+filtered_df = df[(df["Price"] >= price_range[0]) & (df["Price"] <= price_range[1])]
+st.write(filtered_df)
 
 # Acres Range
 acres_min = df['Acres'].min()
