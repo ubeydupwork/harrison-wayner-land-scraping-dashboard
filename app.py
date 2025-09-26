@@ -39,7 +39,7 @@ price_min = df["Price"].min()
 price_max = df["Price"].max()
 price_range = st.sidebar.slider("Price Range", price_min, price_max, (price_min, price_max))
 
-st.sidebar.write(f"Selected Price Range: ${price_range[0]:,.0f} - ${price_range[1]:,.0f}")
+st.sidebar.markdown(f"**${price_range[0]:,} - ${price_range[1]:,}**")
 
 # Acres Range
 acres_min = df['Acres'].min()
