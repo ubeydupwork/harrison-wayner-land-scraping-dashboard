@@ -43,7 +43,7 @@ price_range = st.sidebar.slider("Price Range", price_min, price_max, (price_min,
 # Acres Range
 acres_min = df['Acres'].min()
 acres_max = df['Acres'].max()
-acres_range = st.sidebar.slider('Acres Range', acres_min, acres_max, (acres_min, acres_max))
+acres_range = st.sidebar.slider('Acres Range', acres_min, acres_max, (acres_min, acres_max), step=1000)
 
 # --------------------------
 # Filtreleme
