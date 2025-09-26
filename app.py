@@ -28,10 +28,10 @@ st.set_page_config(
 # --------------------------
 # Sidebar filtreler
 # --------------------------
-st.sidebar.header("Filters")
+st.header("Filters")
 
 # County / Location
-counties = st.sidebar.multiselect("County", df["County"].unique())
+counties = st.multiselect("County", df["County"].unique())
 
 # Price Range
 df["Price"] = df["Price"].replace('[\$,]', '', regex=True).astype(float)
@@ -43,7 +43,7 @@ price_range = st.slider("Price Range", price_min, price_max, (price_min, price_m
 # Acres Range
 acres_min = df['Acres'].min()
 acres_max = df['Acres'].max()
-acres_range = st.sidebar.slider('Acres Range', acres_min, acres_max, (acres_min, acres_max))
+acres_range = st.slider('Acres Range', acres_min, acres_max, (acres_min, acres_max))
 
 # --------------------------
 # Filtreleme
