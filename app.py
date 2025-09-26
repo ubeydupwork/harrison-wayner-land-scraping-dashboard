@@ -37,6 +37,13 @@ counties = st.sidebar.multiselect("County", df["County"].unique())
 df["Price"] = df["Price"].replace('[\$,]', '', regex=True).astype(float)
 price_min = int(df["Price"].min())
 price_max = int(df["Price"].max())
+st.sidebar.subheader("Price Filter")
+min_price_input = st.sidebar.number_input(
+    "Min Price", min_value=price_min, max_value=price_max, value=price_min, step=1000
+)
+max_price_input = st.sidebar.number_input(
+    "Max Price", min_value=price_min, max_value=price_max, value=price_max, step=1000
+)
 price_range = st.sidebar.slider("Price Range", price_min, price_max, (price_min, price_max), step=1000)
 
 
