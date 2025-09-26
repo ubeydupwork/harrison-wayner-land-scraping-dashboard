@@ -33,10 +33,16 @@ st.sidebar.header("Filters")
 # County / Location
 counties = st.sidebar.multiselect("County", df["County"].unique())
 
-# Price Range
 df["Price"] = df["Price"].replace('[\$,]', '', regex=True).astype(float)
+df["Acres"] = df["Acres"].astype(float)
+
+# Sidebar min/max değerler
 price_min = int(df["Price"].min())
 price_max = int(df["Price"].max())
+acres_min = float(df["Acres"].min())
+acres_max = float(df["Acres"].max())
+
+# Sidebar: Price
 st.sidebar.subheader("Price Filter")
 min_price_input = st.sidebar.number_input(
     "Min Price", min_value=price_min, max_value=price_max, value=price_min, step=1000
@@ -44,26 +50,40 @@ min_price_input = st.sidebar.number_input(
 max_price_input = st.sidebar.number_input(
     "Max Price", min_value=price_min, max_value=price_max, value=price_max, step=1000
 )
-price_range = st.sidebar.slider("Price Range", price_min, price_max, (price_min, price_max), step=1000)
+price_range = st.sidebar.slider(
+    "Price Range",
+    min_value=price_min,
+    max_value=price_max,
+    value=(min_price_input, max_price_input),
+    step=1000
+)
+st.sidebar.markdown(f"**Selected Price Range: ${price_range[0]:,} - ${price_range[1]:,}**")
 
+# Sidebar: Acres
+st.sidebar.subheader("Acres Filter")
+min_acres_input = st.sidebar.number_input(
+    "Min Acres", min_value=acres_min, max_value=acres_max, value=acres_min, step=0.1, format="%.1f"
+)
+max_acres_input = st.sidebar.number_input(
+    "Max Acres", min_value=acres_min, max_value=acres_max, value=acres_max, step=0.1, format="%.1f"
+)
+acres_range = st.sidebar.slider(
+    "Acres Range",
+    min_value=acres_min,
+    max_value=acres_max,
+    value=(min_acres_input, max_acres_input),
+    step=0.1,
+    format="%.1f"
+)
+st.sidebar.markdown(f"**Selected Acres Range: {acres_range[0]:,.1f} - {acres_range[1]:,.1f}**")
 
-# Acres Range
-acres_min = df['Acres'].min()
-acres_max = df['Acres'].max()
-acres_range = st.sidebar.slider('Acres Range', acres_min, acres_max, (acres_min, acres_max))
+# DataFrame filtreleme örneği
+filtered_df = df[
+    (df["Price"] >= price_range[0]) & (df["Price"] <= price_range[1]) &
+    (df["Acres"] >= acres_range[0]) & (df["Acres"] <= acres_range[1])
+]
 
-# --------------------------
-# Filtreleme
-# --------------------------
-filtered = df.copy()
-
-if counties:
-    filtered = filtered[filtered["County"].isin(counties)]
-
-filtered = filtered[(filtered["Price"] >= price_range[0]) & (filtered["Price"] <= price_range[1])]
-filtered = filtered[(filtered['Acres'] >= acres_range[0]) & (filtered['Acres'] <= acres_range[1])]
-
-filtered["Price"] = filtered["Price"].map("${:,.0f}".format)
+filtered_df["Price"] = filtered_df["Price"].map("${:,.0f}".format)
 
 # --------------------------
 # Tablo (tek tablo içinde URL → "Git")
@@ -71,7 +91,7 @@ filtered["Price"] = filtered["Price"].map("${:,.0f}".format)
 
 
 st.data_editor(
-    filtered,
+    filtered_df,
     column_config={
         "URL": st.column_config.LinkColumn("URL", display_text='Open Land Page')
     },
