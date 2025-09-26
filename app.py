@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import boto3
-from config import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, BUCKET_NAME, FILE_KEY
 
 # --------------------------
 # S3'ten CSV oku
@@ -10,11 +9,11 @@ from config import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, BUCKET_
 def load_data():
     s3 = boto3.client(
         "s3",
-        aws_access_key_id=AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
-        region_name=AWS_REGION
+        aws_access_key_id=st.secrets["AWS_ACCESS_KEY_ID"],
+        aws_secret_access_key=st.secrets["AWS_SECRET_ACCESS_KEY"],
+        region_name=st.secrets["AWS_REGION"]
     )
-    obj = s3.get_object(Bucket=BUCKET_NAME, Key=FILE_KEY)
+    obj = s3.get_object(Bucket=st.secrets["BUCKET_NAME"], Key=st.secrets["FILE_KEY"])
     df = pd.read_csv(obj["Body"])
     return df
 
