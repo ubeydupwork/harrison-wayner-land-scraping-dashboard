@@ -17,64 +17,76 @@ def load_data():
     df = pd.read_csv(obj["Body"])
     return df
 
+# --------------------------
+# Refresh Data butonu
+# --------------------------
 if st.button("🔄 Refresh Data"):
     st.cache_data.clear()
     st.rerun()
 
+# --------------------------
+# Veri yükleme
+# --------------------------
 df = load_data()
 
-st.title("Property Dashboard")
 st.set_page_config(
     page_title="Property Dashboard",
-    layout="wide"   # <-- "centered" yerine "wide"
+    layout="wide"
 )
 
-# --------------------------
-# Sidebar filtreler
-# --------------------------
-st.header("Filters")
-
-# County / Location
-counties = st.multiselect("County", df["County"].unique())
-
-# Price Range
-df["Price"] = df["Price"].replace('[\$,]', '', regex=True).astype(float)
-price_min = int(df["Price"].min())
-price_max = int(df["Price"].max())
-price_range = st.slider("Price Range", price_min, price_max, (price_min, price_max))
-
-
-# Acres Range
-acres_min = df['Acres'].min()
-acres_max = df['Acres'].max()
-acres_range = st.slider('Acres Range', acres_min, acres_max, (acres_min, acres_max))
+st.title("Property Dashboard")
 
 # --------------------------
-# Filtreleme
+# Eğer veri yoksa
 # --------------------------
-filtered = df.copy()
+if df.empty:
+    st.warning("⚠️ No data available")
+else:
+    # Price sütununu güvenli şekilde sayıya çevir
+    df["Price"] = df["Price"].replace('[\$,]', '', regex=True)
+    df["Price"] = pd.to_numeric(df["Price"], errors="coerce")
 
-if counties:
-    filtered = filtered[filtered["County"].isin(counties)]
+    # --------------------------
+    # Sidebar filtreler
+    # --------------------------
+    st.header("Filters")
 
-filtered = filtered[(filtered["Price"] >= price_range[0]) & (filtered["Price"] <= price_range[1])]
-filtered = filtered[(filtered['Acres'] >= acres_range[0]) & (filtered['Acres'] <= acres_range[1])]
+    # County / Location
+    counties = st.multiselect("County", df["County"].unique())
 
-filtered["Price"] = filtered["Price"].map("${:,.0f}".format)
+    # Price Range
+    price_min = int(df["Price"].min())
+    price_max = int(df["Price"].max())
+    price_range = st.slider("Price Range", price_min, price_max, (price_min, price_max))
 
-# --------------------------
-# Tablo (tek tablo içinde URL → "Git")
-# --------------------------
+    # Acres Range
+    acres_min = df['Acres'].min()
+    acres_max = df['Acres'].max()
+    acres_range = st.slider('Acres Range', acres_min, acres_max, (acres_min, acres_max))
 
+    # --------------------------
+    # Filtreleme
+    # --------------------------
+    filtered = df.copy()
 
-st.data_editor(
-    filtered,
-    column_config={
-        "URL": st.column_config.LinkColumn("URL", display_text='Open Land Page')
-    },
-    hide_index=True,
-    disabled=True,
-    height=700,
-    width=1200
-)
+    if counties:
+        filtered = filtered[filtered["County"].isin(counties)]
 
+    filtered = filtered[(filtered["Price"] >= price_range[0]) & (filtered["Price"] <= price_range[1])]
+    filtered = filtered[(filtered['Acres'] >= acres_range[0]) & (filtered['Acres'] <= acres_range[1])]
+
+    filtered["Price"] = filtered["Price"].map("${:,.0f}".format)
+
+    # --------------------------
+    # Tablo
+    # --------------------------
+    st.data_editor(
+        filtered,
+        column_config={
+            "URL": st.column_config.LinkColumn("URL", display_text='Open Land Page')
+        },
+        hide_index=True,
+        disabled=True,
+        height=700,
+        width=1200
+    )
